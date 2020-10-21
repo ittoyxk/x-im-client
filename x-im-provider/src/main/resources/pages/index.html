@@ -36,7 +36,7 @@ function connect(){
 	username = document.getElementById("username").value;
 	var password = document.getElementById("password").value;
 	logDiv = document.getElementById('logs');
-	socket = new WebSocket("ws:"+ip+":"+port+"/api?token="+password);
+	socket = new WebSocket("wss:"+ip+":"+port+"/api?token="+password);
 	socket.onopen = function(e){
 
 	};

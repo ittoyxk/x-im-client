@@ -7,7 +7,6 @@ import net.commchina.ximbiz.config.NacosImServerConfigBuilder;
 import net.commchina.ximbiz.config.XimRedisMessageHelper;
 import net.commchina.ximbiz.listener.XimGroupListener;
 import net.commchina.ximbiz.listener.XimUserListener;
-import net.commchina.ximbiz.service.LoginServiceProcessor;
 import net.commchina.ximbiz.service.XimLoginServiceProcessor;
 import org.apache.commons.lang3.StringUtils;
 import org.jim.core.packets.Command;

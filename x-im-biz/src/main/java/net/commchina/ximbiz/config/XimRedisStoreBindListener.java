@@ -5,7 +5,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jim.core.ImChannelContext;
 import org.jim.core.ImSessionContext;
-import org.jim.core.cache.redis.RedisCache;
 import org.jim.core.config.ImConfig;
 import org.jim.core.exception.ImException;
 import org.jim.core.listener.AbstractImStoreBindListener;
