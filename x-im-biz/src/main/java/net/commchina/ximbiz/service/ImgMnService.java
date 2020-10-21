@@ -22,7 +22,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 /**
  * 美女图
  *
- * @author tanyaowu
+ * @author xiaokang
  * 2017年5月14日 上午9:48:03
  */
 @Slf4j
@@ -41,7 +41,7 @@ public class ImgMnService {
     }
 
     /**
-     * @author: tanyaowu
+     * @author: xiaokang
      */
     public ImgMnService()
     {

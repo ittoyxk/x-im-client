@@ -13,7 +13,7 @@ import org.jim.server.protocol.ProtocolManager;
 
 /**
  * 群组绑定监听器
- * @author WChao 
+ * @author xiaokang 
  * 2017年5月13日 下午10:38:36
  */
 @Slf4j
@@ -37,7 +37,7 @@ public class XimGroupListener extends AbstractImGroupListener {
 	 * @param imChannelContext
 	 * @param group
 	 * @throws Exception
-	 * @author: WChao
+	 * @author: xiaokang
 	 */
 	@Override
 	public void doAfterUnbind(ImChannelContext imChannelContext, Group group) throws ImException

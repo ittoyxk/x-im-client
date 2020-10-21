@@ -14,7 +14,7 @@ import org.jim.server.command.handler.LoginReqHandler;
 import org.jim.server.processor.handshake.TcpHandshakeProcessor;
 
 /**
- * @author WChao
+ * @author xiaokang
  *
  */
 public class XimTcpHandshakeProcessor extends TcpHandshakeProcessor {

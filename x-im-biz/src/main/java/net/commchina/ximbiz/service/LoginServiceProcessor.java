@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * @author WChao
+ * @author xiaokang
  *
  */
 @Slf4j
@@ -33,7 +33,7 @@ public abstract class LoginServiceProcessor extends AbstractProtocolCmdProcessor
      * @param loginReqBody
      * @param imChannelContext
      * @return
-     * @author: WChao
+     * @author: xiaokang
      */
     @Override
     public User getUser(LoginReqBody loginReqBody, ImChannelContext imChannelContext)
@@ -102,7 +102,7 @@ public abstract class LoginServiceProcessor extends AbstractProtocolCmdProcessor
      * 根据token获取用户信息
      * @param token
      * @return
-     * @author: WChao
+     * @author: xiaokang
      */
     public User getUser(String token, ImChannelContext imChannelContext)
     {

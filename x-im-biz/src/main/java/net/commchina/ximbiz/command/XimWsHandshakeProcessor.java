@@ -13,7 +13,7 @@ import org.jim.server.command.CommandManager;
 import org.jim.server.command.handler.LoginReqHandler;
 
 /**
- * @author WChao
+ * @author xiaokang
  */
 public class XimWsHandshakeProcessor extends org.jim.server.processor.handshake.WsHandshakeProcessor {
 

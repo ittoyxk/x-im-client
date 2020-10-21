@@ -9,7 +9,7 @@ import org.jim.core.session.id.impl.UUIDSessionIdGenerator;
 import java.util.*;
 
 /**
- * @author WChao
+ * @author xiaokang
  *
  */
 @Slf4j

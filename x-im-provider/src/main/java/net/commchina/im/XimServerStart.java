@@ -29,7 +29,7 @@ import org.tio.core.ssl.SslConfig;
 /**
  * IM服务端DEMO演示启动类;
  *
- * @author WChao
+ * @author xiaokang
  * @date 2018-04-05 23:50:25
  */
 @Slf4j

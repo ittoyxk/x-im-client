@@ -8,7 +8,7 @@ import org.jim.core.packets.User;
 import org.jim.server.listener.AbstractImUserListener;
 
 /**
- * @author WChao
+ * @author xiaokang
  * @Desc
  * @date 2020-05-02 18:18
  */
