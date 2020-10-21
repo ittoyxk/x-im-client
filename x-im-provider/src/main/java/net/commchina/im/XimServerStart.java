@@ -1,6 +1,7 @@
 package net.commchina.im;
 
 import lombok.extern.slf4j.Slf4j;
+import net.commchina.ximbiz.command.XimTcpHandshakeProcessor;
 import net.commchina.ximbiz.command.XimWsHandshakeProcessor;
 import net.commchina.ximbiz.config.NacosImServerConfigBuilder;
 import net.commchina.ximbiz.config.XimRedisMessageHelper;
@@ -83,6 +84,7 @@ public class XimServerStart implements ApplicationRunner {
         HandshakeReqHandler handshakeReqHandler = CommandManager.getCommand(Command.COMMAND_HANDSHAKE_REQ, HandshakeReqHandler.class);
         //添加自定义握手处理器;
         handshakeReqHandler.addMultiProtocolProcessor(new XimWsHandshakeProcessor());
+        handshakeReqHandler.addMultiProtocolProcessor(new XimTcpHandshakeProcessor());
         LoginReqHandler loginReqHandler = CommandManager.getCommand(Command.COMMAND_LOGIN_REQ, LoginReqHandler.class);
         //添加登录业务处理器;
         loginReqHandler.setSingleProcessor(new XimLoginServiceProcessor());

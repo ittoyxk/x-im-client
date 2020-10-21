@@ -22,12 +22,10 @@ public class XimTcpHandshakeProcessor extends TcpHandshakeProcessor {
 	@Override
 	public void onAfterHandshake(ImPacket packet, ImChannelContext imChannelContext) throws ImException
     {
-		/*LoginReqHandler loginHandler = (LoginReqHandler) CommandManager.getCommand(Command.COMMAND_LOGIN_REQ);
+		LoginReqHandler loginHandler = (LoginReqHandler) CommandManager.getCommand(Command.COMMAND_LOGIN_REQ);
 		HttpRequest request = (HttpRequest)packet;
-		String username = request.getParams().get("username") == null ? null : (String)request.getParams().get("username")[0];
-		String password = request.getParams().get("password") == null ? null : (String)request.getParams().get("password")[0];
 		String token = request.getParams().get("token") == null ? null : (String)request.getParams().get("token")[0];
-		LoginReqBody loginBody = new LoginReqBody(username,password,token);
+		LoginReqBody loginBody = new LoginReqBody(token);
 		byte[] loginBytes = JsonKit.toJsonBytes(loginBody);
 		request.setBody(loginBytes);
 		try{
@@ -38,6 +36,6 @@ public class XimTcpHandshakeProcessor extends TcpHandshakeProcessor {
 		ImPacket loginRespPacket = loginHandler.handler(request, imChannelContext);
 		if(loginRespPacket != null){
 			JimServerAPI.send(imChannelContext, loginRespPacket);
-		}*/
+		}
 	}
 }
