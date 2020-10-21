@@ -15,7 +15,6 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>x-im-dao</module>
         <module>x-im-biz</module>
         <module>x-im-common</module>
         <module>x-im-provider</module>
