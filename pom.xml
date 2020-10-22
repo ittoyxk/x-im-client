@@ -30,7 +30,7 @@
         <jasypt.version>2.1.0</jasypt.version>
         <kaptcha.version>0.0.9</kaptcha.version>
         <fastjson.version>1.2.73</fastjson.version>
-        <commchina.common>1.0.3.1</commchina.common>
+        <commchina.common>1.0.3.2</commchina.common>
         <jackson.version>2.11.2</jackson.version>
         <guava.version>29.0-jre</guava.version>
         <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
@@ -58,6 +58,10 @@
                 <exclusion>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-test</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -135,6 +139,11 @@
             <artifactId>tio-core</artifactId>
             <version>${tio-core.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <profiles>
@@ -146,45 +155,18 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>javax.servlet-api</artifactId>
-                    <version>4.0.1</version>
-                </dependency>
-            </dependencies>
         </profile>
         <profile>
             <id>test</id>
             <properties>
                 <profile.active>test</profile.active>
             </properties>
-
-            <dependencies>
-                <!-- tomcat start -->
-                <dependency>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>javax.servlet-api</artifactId>
-                    <version>4.0.1</version>
-                </dependency>
-                <!-- tomcat end -->
-            </dependencies>
         </profile>
         <profile>
             <id>prod</id>
             <properties>
                 <profile.active>prod</profile.active>
             </properties>
-
-            <dependencies>
-                <!-- tomcat start -->
-                <dependency>
-                    <groupId>javax.servlet</groupId>
-                    <artifactId>javax.servlet-api</artifactId>
-                    <version>4.0.1</version>
-                </dependency>
-                <!-- tomcat end -->
-            </dependencies>
         </profile>
     </profiles>
 
