@@ -1,0 +1,44 @@
+version: '3'
+services:
+
+  im-gateway:
+    image: hub.commchina.net/library/haproxy:2.1.4
+    container_name: im-gateway
+    ports:
+      - "7070:7070"
+    restart: always
+    volumes:
+      - ./im-gateway:/usr/local/etc/haproxy
+      - ./im-gateway/ssl:/etc/ssl
+      #im-gateway:
+      #container_name: im-gateway
+      #image: hub.commchina.net/library/nginx:1.18.0-alpine
+      #restart: always
+      #ports:
+      #- 7070:7070
+      #volumes:
+      #- ./nginx/conf.d:/etc/nginx/conf.d
+      #- ./logs/nginx/:/var/log/nginx
+      #- ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      #- ./nginx/ssl:/etc/nginx/ssl
+
+  x-im:
+    image: im/x-im
+    container_name: x-im
+    restart: on-failure
+      #ports:
+    #- 7070:7070
+    volumes:
+      - /data/commchina/shendun/logs:/data/commchina/shendun/logs
+      - /data/commchina/shendun/log_conf:/log_conf
+    environment:
+      - SERVER_PORT=7000
+      - TZ=Asia/Shanghai
+      - HOST_UID=${HOST_UID}
+      - HOST_GID=${HOST_GID}
+      - JAVA_OPTS=-Xms1024m -Xmx1024m -Djava.security.egd=file:/dev/./urandom
+      - SPRING_OPTS=--logging.config=/log_conf/logback_im.xml
+    logging:
+      options:
+        max-size: '100m'
+        max-file: '10'
