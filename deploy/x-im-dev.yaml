@@ -1,0 +1,41 @@
+server:
+  shutdown: graceful
+  undertow:
+    # 指定工作者线程的 I/0 线程数，默认为 2 或者 CPU 的个数
+    io-threads: 8
+    # 阻塞任务线程池, 当执行类似servlet请求阻塞IO操作, undertow会从这个线程池中取得线程  它的值设置取决于系统线程执行任务的阻塞系数，默认值是IO线程数*8
+    worker-threads: 64
+    buffer-size: 1024
+    buffers-per-region: 1024
+    # 是否分配的直接内存(NIO直接分配的堆外内存)
+    direct-buffers: true
+    max-http-post-size: 0
+
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+##J-IM基础配置
+jim:
+  bind:
+    ip: 0.0.0.0
+  port: 7070
+  #心跳超时时长
+  heartbeat:
+    timeout: 0
+  #是否开启消息持久化(on:开启,off:不开启)
+  store: on
+  #是否开启集群(on:开启,off:不开启)
+  cluster: off
+  #是否开启SSL(on:开启,off:不开启)
+  ssl: off
+  http:
+    page: pages
+    max:
+      live:
+        time: 0
+    scan:
+      packages: net.commchina.im.XimServerStart
+
+
+##ws协议配置
+
