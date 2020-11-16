@@ -108,7 +108,7 @@ public class XimRedisMessageHelper extends AbstractMessageHelper {
                 Iterator<String> userKeyIterator = userKeys.iterator();
                 while (userKeyIterator.hasNext()) {
                     String userKey = userKeyIterator.next();
-                    userKey = userKey.substring(userKey.indexOf(PUSH + SUFFIX));
+                    userKey = userKey.substring(userKey.indexOf(PUSH + SUFFIX)+(PUSH + SUFFIX).length());
                     List<String> messages = XimRedisCacheManager.getCache(PUSH).sortSetGetAll(userKey);
                     XimRedisCacheManager.getCache(PUSH).remove(userKey);
                     messageList.addAll(BeanUtils.toArray(messages, ChatBody.class));
