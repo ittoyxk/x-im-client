@@ -29,53 +29,56 @@ public abstract class AsyncChatMessageProcessor extends BaseAsyncChatMessageProc
     public abstract void remove(String key);
 
     /**
-     * 获取与指定用户离线消息;
+     * 模糊删除消息持久化
      *
-     * @param userId     用户ID
-     * @param fromUserId 目标用户ID
-     * @return
+     * @param key 持久化ID
      */
-    public abstract List<ChatBody> getFriendsOfflineMessage(String userId, String fromUserId);
+    public abstract void fuzzyRemove(String key);
+
 
     /**
      * 获取与所有用户离线消息;
      *
-     * @param userId 用户ID
+     * @param key 持久化ID
      * @return
      */
-    public abstract  List<ChatBody> getFriendsOfflineMessage(String userId);
+    public abstract List<ChatBody> getOfflineMessage(String key);
 
     /**
-     * 获取用户指定群组离线消息;
+     * 模糊获取与所有用户离线消息;
      *
-     * @param key  持久化ID
+     * @param key 持久化ID
      * @return
      */
-    public abstract  List<ChatBody> getGroupOfflineMessage(String key);
+    public abstract List<ChatBody> fuzzyOfflineMessage(String key);
 
     /**
      * 获取与指定用户历史消息;
      *
-     * @param userId     用户ID
-     * @param fromUserId 目标用户ID
-     * @param beginTime  消息区间开始时间
-     * @param endTime    消息区间结束时间
-     * @param offset     分页偏移量
-     * @param count      数量
+     * @param key 持久化ID
      * @return
      */
-    public abstract  List<ChatBody> getFriendHistoryMessage(String userId, String fromUserId, Double beginTime, Double endTime, Integer offset, Integer count);
+    public abstract List<ChatBody> getHistoryMessage(String key);
 
     /**
-     * 获取与指定群组历史消息;
+     * 获取与指定用户历史消息;
      *
-     * @param userId    用户ID
-     * @param groupId   群组ID
-     * @param beginTime 消息区间开始时间
-     * @param endTime   消息区间结束时间
-     * @param offset    分页偏移量
-     * @param count     数量
+     * @param key 持久化ID
+     * @param min 消息区间开始时间
+     * @param max 消息区间结束时间
      * @return
      */
-    public abstract  List<ChatBody> getGroupHistoryMessage(String userId, String groupId, Double beginTime, Double endTime, Integer offset, Integer count);
+    public abstract List<ChatBody> getHistoryMessage(String key, double min, double max);
+
+    /**
+     * 获取与指定用户历史消息;
+     *
+     * @param key    持久化ID
+     * @param min    消息区间开始时间
+     * @param max    消息区间结束时间
+     * @param offset 分页偏移量
+     * @param count  数量
+     * @return
+     */
+    public abstract List<ChatBody> getHistoryMessage(String key, double min, double max, int offset, int count);
 }

@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.commchina.ximbiz.processor.AsyncChatMessageProcessor;
 import org.jim.core.ImChannelContext;
 import org.jim.core.packets.ChatBody;
-import org.jim.core.utils.JsonKit;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 
@@ -16,6 +14,23 @@ import java.util.List;
  */
 @Slf4j
 public class XimAsyncChatMessageProcessor extends AsyncChatMessageProcessor {
+
+
+    public XimAsyncChatMessageProcessor()
+    {
+    }
+
+    /**
+     * 供子类拿到消息进行业务处理(如:消息持久化到数据库等)的抽象方法
+     *
+     * @param chatBody
+     * @param imChannelContext
+     */
+    @Override
+    protected void doProcess(ChatBody chatBody, ImChannelContext imChannelContext)
+    {
+    }
+
     /**
      * 消息持久化写入
      *
@@ -41,39 +56,36 @@ public class XimAsyncChatMessageProcessor extends AsyncChatMessageProcessor {
     }
 
     /**
-     * 获取与指定用户离线消息;
+     * 模糊删除消息持久化
      *
-     * @param userId     用户ID
-     * @param fromUserId 目标用户ID
-     * @return
+     * @param key 持久化ID
      */
     @Override
-    public List<ChatBody> getFriendsOfflineMessage(String userId, String fromUserId)
+    public void fuzzyRemove(String key)
     {
-        return null;
+
     }
 
     /**
      * 获取与所有用户离线消息;
      *
-     * @param userId 用户ID
+     * @param key 持久化ID
      * @return
      */
     @Override
-    public List<ChatBody> getFriendsOfflineMessage(String userId)
+    public List<ChatBody> getOfflineMessage(String key)
     {
         return null;
     }
 
     /**
-     * 获取用户指定群组离线消息;
+     * 模糊获取与所有用户离线消息;
      *
-     * @param userId  用户ID
-     * @param groupId 群组ID
+     * @param key 持久化ID
      * @return
      */
     @Override
-    public   List<ChatBody> getGroupOfflineMessage(String key)
+    public List<ChatBody> fuzzyOfflineMessage(String key)
     {
         return null;
     }
@@ -81,45 +93,42 @@ public class XimAsyncChatMessageProcessor extends AsyncChatMessageProcessor {
     /**
      * 获取与指定用户历史消息;
      *
-     * @param userId     用户ID
-     * @param fromUserId 目标用户ID
-     * @param beginTime  消息区间开始时间
-     * @param endTime    消息区间结束时间
-     * @param offset     分页偏移量
-     * @param count      数量
+     * @param key 持久化ID
      * @return
      */
     @Override
-    public List<ChatBody> getFriendHistoryMessage(String userId, String fromUserId, Double beginTime, Double endTime, Integer offset, Integer count)
+    public List<ChatBody> getHistoryMessage(String key)
     {
         return null;
     }
 
     /**
-     * 获取与指定群组历史消息;
+     * 获取与指定用户历史消息;
      *
-     * @param userId    用户ID
-     * @param groupId   群组ID
-     * @param beginTime 消息区间开始时间
-     * @param endTime   消息区间结束时间
-     * @param offset    分页偏移量
-     * @param count     数量
+     * @param key 持久化ID
+     * @param min 消息区间开始时间
+     * @param max 消息区间结束时间
      * @return
      */
     @Override
-    public List<ChatBody> getGroupHistoryMessage(String userId, String groupId, Double beginTime, Double endTime, Integer offset, Integer count)
+    public List<ChatBody> getHistoryMessage(String key, double min, double max)
     {
         return null;
     }
 
     /**
-     * 供子类拿到消息进行业务处理(如:消息持久化到数据库等)的抽象方法
+     * 获取与指定用户历史消息;
      *
-     * @param chatBody
-     * @param imChannelContext
+     * @param key    持久化ID
+     * @param min    消息区间开始时间
+     * @param max    消息区间结束时间
+     * @param offset 分页偏移量
+     * @param count  数量
+     * @return
      */
     @Override
-    protected void doProcess(ChatBody chatBody, ImChannelContext imChannelContext)
+    public List<ChatBody> getHistoryMessage(String key, double min, double max, int offset, int count)
     {
+        return null;
     }
 }

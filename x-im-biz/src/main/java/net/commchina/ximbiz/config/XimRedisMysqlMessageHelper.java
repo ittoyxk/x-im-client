@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import net.commchina.framework.boot.redis.EnhancedRedisService;
 import net.commchina.framework.common.util.SpringContextUtil;
-import net.commchina.xim.common.util.BeanUtils;
 import net.commchina.ximbiz.processor.AsyncChatMessageProcessor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,7 +15,9 @@ import org.jim.server.command.CommandManager;
 import org.jim.server.command.handler.ChatReqHandler;
 import org.jim.server.util.ChatKit;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @description: x-im
@@ -96,7 +97,7 @@ public class XimRedisMysqlMessageHelper extends AbstractMessageHelper {
     {
         String userFriendKey = USER + SUFFIX + userId + SUFFIX + fromUserId;
         String key = XimRedisCache.cacheKey(XimRedisCacheManager.getCache(PUSH).getCacheName(), userFriendKey);
-        List<ChatBody> messageDataList = messageProcessor.getFriendsOfflineMessage(key);
+        List<ChatBody> messageDataList = messageProcessor.getOfflineMessage(key);
         messageProcessor.remove(key);
         return putFriendsMessage(new UserMessageData(userId), messageDataList, null);
     }
@@ -106,29 +107,16 @@ public class XimRedisMysqlMessageHelper extends AbstractMessageHelper {
     {
         UserMessageData messageData = new UserMessageData(userId);
         try {
-            Set<String> userKeys = enhancedRedisService.keys(PUSH + SUFFIX + USER + SUFFIX + userId);
             //获取好友离线消息;
-            if (CollectionUtils.isNotEmpty(userKeys)) {
-                List<ChatBody> messageList = new ArrayList<ChatBody>();
-                Iterator<String> userKeyIterator = userKeys.iterator();
-                while (userKeyIterator.hasNext()) {
-                    String userKey = userKeyIterator.next();
-                    userKey = userKey.substring(userKey.indexOf(USER + SUFFIX));
-                    List<String> messages = XimRedisCacheManager.getCache(GROUP).sortSetGetAll(userKey);
-                    XimRedisCacheManager.getCache(GROUP).remove(userKey);
-                    messageList.addAll(BeanUtils.toArray(messages, ChatBody.class));
-                }
-                putFriendsMessage(messageData, messageList, null);
-            }
-            List<String> groupIdList = XimRedisCacheManager.getCache(USER).listGetAll(userId + SUFFIX + GROUP);
+            List<ChatBody> messageList = new ArrayList<ChatBody>();
+            messageList.addAll(messageProcessor.fuzzyOfflineMessage(PUSH + SUFFIX + USER + SUFFIX + userId + "%"));
+            messageProcessor.fuzzyRemove(PUSH + SUFFIX + USER + SUFFIX + userId + "%");
+            putFriendsMessage(messageData, messageList, null);
+
             //获取群组离线消息;
-            if (CollectionUtils.isNotEmpty(groupIdList)) {
-                groupIdList.forEach(groupId -> {
-                    UserMessageData groupMessageData = getGroupOfflineMessage(userId, groupId);
-                    if (Objects.isNull(groupMessageData)) return;
-                    putGroupMessage(messageData, groupMessageData.getGroups().get(groupId));
-                });
-            }
+            List<ChatBody> groupMessage = messageProcessor.fuzzyOfflineMessage(PUSH + SUFFIX + GROUP + SUFFIX + "%" + SUFFIX + userId);
+            messageProcessor.fuzzyRemove(PUSH + SUFFIX + GROUP + SUFFIX + "%" + SUFFIX + userId);
+            putGroupMessage(messageData, groupMessage);
         } catch (Exception e) {
             log.error(e.toString(), e);
         }
@@ -141,7 +129,7 @@ public class XimRedisMysqlMessageHelper extends AbstractMessageHelper {
         UserMessageData messageData = new UserMessageData(userId);
         String userGroupKey = GROUP + SUFFIX + groupId + SUFFIX + userId;
         String key = XimRedisCache.cacheKey(XimRedisCacheManager.getCache(PUSH).getCacheName(), userGroupKey);
-        List<ChatBody> messages =  messageProcessor.getGroupOfflineMessage(key);
+        List<ChatBody> messages = messageProcessor.getOfflineMessage(key);
         if (CollectionUtils.isEmpty(messages)) {
             return messageData;
         }
@@ -155,9 +143,9 @@ public class XimRedisMysqlMessageHelper extends AbstractMessageHelper {
     {
         String sessionId = ChatKit.sessionId(userId, fromUserId);
         String userSessionKey = USER + SUFFIX + sessionId;
-        List<String> messages = getHistoryMessage(userSessionKey, beginTime, endTime, offset, count);
+        List<ChatBody> messages = getHistoryMessage(userSessionKey, beginTime, endTime, offset, count);
         UserMessageData messageData = new UserMessageData(userId);
-        putFriendsMessage(messageData, BeanUtils.toArray(messages, ChatBody.class), fromUserId);
+        putFriendsMessage(messageData, messages, fromUserId);
         return messageData;
     }
 
@@ -165,29 +153,29 @@ public class XimRedisMysqlMessageHelper extends AbstractMessageHelper {
     public UserMessageData getGroupHistoryMessage(String userId, String groupId, Double beginTime, Double endTime, Integer offset, Integer count)
     {
         String groupKey = GROUP + SUFFIX + groupId;
-        List<String> messages = getHistoryMessage(groupKey, beginTime, endTime, offset, count);
+        List<ChatBody> messages = getHistoryMessage(groupKey, beginTime, endTime, offset, count);
         UserMessageData messageData = new UserMessageData(userId);
-        putGroupMessage(messageData, BeanUtils.toArray(messages, ChatBody.class));
+        putGroupMessage(messageData, messages);
         return messageData;
     }
 
-    private List<String> getHistoryMessage(String historyKey, Double beginTime, Double endTime, Integer offset, Integer count)
+    private List<ChatBody> getHistoryMessage(String historyKey, Double beginTime, Double endTime, Integer offset, Integer count)
     {
         boolean isTimeBetween = (beginTime != null && endTime != null);
         boolean isPage = (offset != null && count != null);
-        XimRedisCache storeCache = XimRedisCacheManager.getCache(STORE);
+//        XimRedisCache storeCache = XimRedisCacheManager.getCache(STORE);
         //消息区间，不分页
         if (isTimeBetween && !isPage) {
-            return storeCache.sortSetGetAll(historyKey, beginTime, endTime);
+            return messageProcessor.getHistoryMessage(historyKey, beginTime, endTime);
             //消息区间，并且分页;
         } else if (isTimeBetween && isPage) {
-            return storeCache.sortSetGetAll(historyKey, beginTime, endTime, offset, count);
+            return messageProcessor.getHistoryMessage(historyKey, beginTime, endTime, offset, count);
             //所有消息，并且分页;
         } else if (isPage) {
-            return storeCache.sortSetGetAll(historyKey, 0, Double.MAX_VALUE, offset, count);
+            return messageProcessor.getHistoryMessage(historyKey, 0, Double.MAX_VALUE, offset, count);
             //所有消息，不分页;
         } else {
-            return storeCache.sortSetGetAll(historyKey);
+            return messageProcessor.getHistoryMessage(historyKey);
         }
     }
 
