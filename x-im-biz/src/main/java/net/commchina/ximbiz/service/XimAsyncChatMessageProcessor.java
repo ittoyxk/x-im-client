@@ -1,9 +1,14 @@
 package net.commchina.ximbiz.service;
 
 import lombok.extern.slf4j.Slf4j;
+import net.commchina.framework.common.util.SpringContextUtil;
+import net.commchina.xim.common.bean.ChatMessageReq;
+import net.commchina.xim.common.constant.AppConstant;
 import net.commchina.ximbiz.processor.AsyncChatMessageProcessor;
+import net.commchina.ximbiz.remote.ImCoreRemote;
 import org.jim.core.ImChannelContext;
 import org.jim.core.packets.ChatBody;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.util.List;
 
@@ -15,9 +20,14 @@ import java.util.List;
 @Slf4j
 public class XimAsyncChatMessageProcessor extends AsyncChatMessageProcessor {
 
+    private RabbitTemplate rabbitTemplate;
+
+    private ImCoreRemote imCoreRemote;
 
     public XimAsyncChatMessageProcessor()
     {
+        this.rabbitTemplate = SpringContextUtil.getBean(RabbitTemplate.class);
+        this.imCoreRemote = SpringContextUtil.getBean(ImCoreRemote.class);
     }
 
     /**
@@ -41,7 +51,8 @@ public class XimAsyncChatMessageProcessor extends AsyncChatMessageProcessor {
     @Override
     public void writeMessage(String key, double score, ChatBody chatBody)
     {
-
+        ChatMessageReq build = ChatMessageReq.builder().msgType(1).key(key).score(score).chatBody(chatBody).build();
+        rabbitTemplate.convertAndSend(AppConstant.IM_CHAT_MESSAGE_EXCHANGE, AppConstant.IM_CHAT_MESSAGE_ROUTING_KEY, build);
     }
 
     /**
@@ -52,7 +63,8 @@ public class XimAsyncChatMessageProcessor extends AsyncChatMessageProcessor {
     @Override
     public void remove(String key)
     {
-
+        ChatMessageReq build = ChatMessageReq.builder().msgType(2).key(key).build();
+        rabbitTemplate.convertAndSend(AppConstant.IM_CHAT_MESSAGE_EXCHANGE, AppConstant.IM_CHAT_MESSAGE_ROUTING_KEY, build);
     }
 
     /**
@@ -63,7 +75,8 @@ public class XimAsyncChatMessageProcessor extends AsyncChatMessageProcessor {
     @Override
     public void fuzzyRemove(String key)
     {
-
+        ChatMessageReq build = ChatMessageReq.builder().msgType(3).key(key).build();
+        rabbitTemplate.convertAndSend(AppConstant.IM_CHAT_MESSAGE_EXCHANGE, AppConstant.IM_CHAT_MESSAGE_ROUTING_KEY, build);
     }
 
     /**
@@ -75,7 +88,7 @@ public class XimAsyncChatMessageProcessor extends AsyncChatMessageProcessor {
     @Override
     public List<ChatBody> getOfflineMessage(String key)
     {
-        return null;
+        return imCoreRemote.getOfflineMessage(key).getData();
     }
 
     /**
@@ -87,7 +100,7 @@ public class XimAsyncChatMessageProcessor extends AsyncChatMessageProcessor {
     @Override
     public List<ChatBody> fuzzyOfflineMessage(String key)
     {
-        return null;
+        return imCoreRemote.fuzzyOfflineMessage(key).getData();
     }
 
     /**
@@ -99,7 +112,7 @@ public class XimAsyncChatMessageProcessor extends AsyncChatMessageProcessor {
     @Override
     public List<ChatBody> getHistoryMessage(String key)
     {
-        return null;
+        return imCoreRemote.getHistoryMessage(key).getData();
     }
 
     /**
@@ -113,7 +126,7 @@ public class XimAsyncChatMessageProcessor extends AsyncChatMessageProcessor {
     @Override
     public List<ChatBody> getHistoryMessage(String key, double min, double max)
     {
-        return null;
+        return imCoreRemote.getHistoryMessage(key, min, max).getData();
     }
 
     /**
@@ -129,6 +142,6 @@ public class XimAsyncChatMessageProcessor extends AsyncChatMessageProcessor {
     @Override
     public List<ChatBody> getHistoryMessage(String key, double min, double max, int offset, int count)
     {
-        return null;
+        return imCoreRemote.getHistoryMessage(key, min, max, offset, count).getData();
     }
 }
