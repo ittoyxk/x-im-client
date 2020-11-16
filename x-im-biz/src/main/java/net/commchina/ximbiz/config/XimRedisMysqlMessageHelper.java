@@ -5,12 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import net.commchina.framework.boot.redis.EnhancedRedisService;
 import net.commchina.framework.common.util.SpringContextUtil;
 import net.commchina.xim.common.util.BeanUtils;
+import net.commchina.ximbiz.processor.AsyncChatMessageProcessor;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jim.core.config.ImConfig;
 import org.jim.core.listener.ImStoreBindListener;
 import org.jim.core.message.AbstractMessageHelper;
 import org.jim.core.packets.*;
+import org.jim.server.command.CommandManager;
+import org.jim.server.command.handler.ChatReqHandler;
 import org.jim.server.util.ChatKit;
 
 import java.util.*;
@@ -21,16 +24,18 @@ import java.util.*;
  * @time 2020/10/20 14:04
  */
 @Slf4j
-public class XimRedisMessageHelper extends AbstractMessageHelper {
+public class XimRedisMysqlMessageHelper extends AbstractMessageHelper {
 
 
     private EnhancedRedisService enhancedRedisService;
+    private AsyncChatMessageProcessor messageProcessor;
     private static final String SUFFIX = ":";
 
 
-    public XimRedisMessageHelper()
+    public XimRedisMysqlMessageHelper()
     {
         enhancedRedisService = SpringContextUtil.getBean(EnhancedRedisService.class);
+        messageProcessor = CommandManager.getCommand(Command.COMMAND_CHAT_REQ, ChatReqHandler.class).getSingleProcessor(AsyncChatMessageProcessor.class);
         this.imConfig = ImConfig.Global.get();
     }
 
@@ -46,8 +51,8 @@ public class XimRedisMessageHelper extends AbstractMessageHelper {
     {
         try {
             return enhancedRedisService.sIsMember(USER + SUFFIX + TERMINAL + SUFFIX + Protocol.WEB_SOCKET, userId)
-                    ||enhancedRedisService.sIsMember(USER + SUFFIX + TERMINAL + SUFFIX + Protocol.TCP, userId)
-                    ||enhancedRedisService.sIsMember(USER + SUFFIX + TERMINAL + SUFFIX + Protocol.HTTP, userId);
+                    || enhancedRedisService.sIsMember(USER + SUFFIX + TERMINAL + SUFFIX + Protocol.TCP, userId)
+                    || enhancedRedisService.sIsMember(USER + SUFFIX + TERMINAL + SUFFIX + Protocol.HTTP, userId);
         } catch (Exception e) {
             log.error(e.toString(), e);
         }
@@ -66,7 +71,7 @@ public class XimRedisMessageHelper extends AbstractMessageHelper {
     public void writeMessage(String timelineTable, String timelineId, ChatBody chatBody)
     {
         double score = chatBody.getCreateTime();
-        XimRedisCacheManager.getCache(timelineTable).sortSetPush(timelineId, score, chatBody);
+        messageProcessor.writeMessage(XimRedisCacheManager.getCache(timelineTable).getCacheName() + timelineId, score, chatBody);
     }
 
 
@@ -90,9 +95,9 @@ public class XimRedisMessageHelper extends AbstractMessageHelper {
     public UserMessageData getFriendsOfflineMessage(String userId, String fromUserId)
     {
         String userFriendKey = USER + SUFFIX + userId + SUFFIX + fromUserId;
-        List<String> messageList = XimRedisCacheManager.getCache(PUSH).sortSetGetAll(userFriendKey);
-        List<ChatBody> messageDataList = BeanUtils.toArray(messageList, ChatBody.class);
-        XimRedisCacheManager.getCache(PUSH).remove(userFriendKey);
+        String key = XimRedisCache.cacheKey(XimRedisCacheManager.getCache(PUSH).getCacheName(), userFriendKey);
+        List<ChatBody> messageDataList = messageProcessor.getFriendsOfflineMessage(key);
+        messageProcessor.remove(key);
         return putFriendsMessage(new UserMessageData(userId), messageDataList, null);
     }
 
@@ -101,7 +106,7 @@ public class XimRedisMessageHelper extends AbstractMessageHelper {
     {
         UserMessageData messageData = new UserMessageData(userId);
         try {
-            Set<String> userKeys = enhancedRedisService.keys(PUSH + SUFFIX + USER + SUFFIX + userId+"*");
+            Set<String> userKeys = enhancedRedisService.keys(PUSH + SUFFIX + USER + SUFFIX + userId);
             //获取好友离线消息;
             if (CollectionUtils.isNotEmpty(userKeys)) {
                 List<ChatBody> messageList = new ArrayList<ChatBody>();
@@ -135,12 +140,13 @@ public class XimRedisMessageHelper extends AbstractMessageHelper {
     {
         UserMessageData messageData = new UserMessageData(userId);
         String userGroupKey = GROUP + SUFFIX + groupId + SUFFIX + userId;
-        List<String> messages = XimRedisCacheManager.getCache(PUSH).sortSetGetAll(userGroupKey);
+        String key = XimRedisCache.cacheKey(XimRedisCacheManager.getCache(PUSH).getCacheName(), userGroupKey);
+        List<ChatBody> messages =  messageProcessor.getGroupOfflineMessage(key);
         if (CollectionUtils.isEmpty(messages)) {
             return messageData;
         }
-        putGroupMessage(messageData, BeanUtils.toArray(messages, ChatBody.class));
-        XimRedisCacheManager.getCache(PUSH).remove(userGroupKey);
+        putGroupMessage(messageData, messages);
+        messageProcessor.remove(key);
         return messageData;
     }
 

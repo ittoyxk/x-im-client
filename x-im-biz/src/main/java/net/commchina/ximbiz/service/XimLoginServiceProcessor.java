@@ -2,6 +2,7 @@ package net.commchina.ximbiz.service;
 
 import cn.hutool.core.util.RandomUtil;
 import lombok.extern.slf4j.Slf4j;
+import net.commchina.ximbiz.processor.LoginServiceProcessor;
 import org.jim.core.packets.Group;
 import org.jim.core.packets.User;
 import org.jim.core.session.id.impl.UUIDSessionIdGenerator;

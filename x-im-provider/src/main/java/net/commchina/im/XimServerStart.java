@@ -5,8 +5,10 @@ import net.commchina.ximbiz.command.XimTcpHandshakeProcessor;
 import net.commchina.ximbiz.command.XimWsHandshakeProcessor;
 import net.commchina.ximbiz.config.NacosImServerConfigBuilder;
 import net.commchina.ximbiz.config.XimRedisMessageHelper;
+import net.commchina.ximbiz.config.XimRedisMysqlMessageHelper;
 import net.commchina.ximbiz.listener.XimGroupListener;
 import net.commchina.ximbiz.listener.XimUserListener;
+import net.commchina.ximbiz.service.XimAsyncChatMessageProcessor;
 import net.commchina.ximbiz.service.XimLoginServiceProcessor;
 import org.apache.commons.lang3.StringUtils;
 import org.jim.core.packets.Command;
@@ -17,8 +19,6 @@ import org.jim.server.command.handler.ChatReqHandler;
 import org.jim.server.command.handler.HandshakeReqHandler;
 import org.jim.server.command.handler.LoginReqHandler;
 import org.jim.server.config.ImServerConfig;
-import org.jim.server.processor.chat.DefaultAsyncChatMessageProcessor;
-import org.jim.server.protocol.ProtocolManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -75,9 +75,6 @@ public class XimServerStart implements ApplicationRunner {
         imServerConfig.setImGroupListener(new XimGroupListener());
         //设置绑定用户监听器，非必须，根据需要自己选择性实现;
         imServerConfig.setImUserListener(new XimUserListener());
-        imServerConfig.setIsStore(store ? "on" : "off");
-        imServerConfig.setMessageHelper(new XimRedisMessageHelper());
-        JimServer jimServer = new JimServer(imServerConfig);
 
         /*****************start 以下处理器根据业务需要自行添加与扩展，每个Command都可以添加扩展,此处为demo中处理**********************************/
 
@@ -90,9 +87,14 @@ public class XimServerStart implements ApplicationRunner {
         loginReqHandler.setSingleProcessor(new XimLoginServiceProcessor());
         //添加用户业务聊天记录处理器，用户自己继承抽象类BaseAsyncChatMessageProcessor即可，以下为内置默认的处理器！
         ChatReqHandler chatReqHandler = CommandManager.getCommand(Command.COMMAND_CHAT_REQ, ChatReqHandler.class);
-        chatReqHandler.setSingleProcessor(new DefaultAsyncChatMessageProcessor());
+        chatReqHandler.setSingleProcessor(new XimAsyncChatMessageProcessor());
         /*****************end *******************************************************************************************/
         //TODO 生产环境移除http协议 ProtocolManager.removeServerHandler("http");
+
+        imServerConfig.setIsStore(store ? "on" : "off");
+        imServerConfig.setMessageHelper(new XimRedisMessageHelper());
+        JimServer jimServer = new JimServer(imServerConfig);
+
         jimServer.start();
         log.info("jim server start");
 

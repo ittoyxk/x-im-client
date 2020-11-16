@@ -1,7 +1,7 @@
 /**
  *
  */
-package net.commchina.ximbiz.service;
+package net.commchina.ximbiz.processor;
 
 import com.alibaba.fastjson.JSONObject;
 import feign.Response;

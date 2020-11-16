@@ -11,11 +11,12 @@ import org.jim.core.utils.JsonKit;
 import org.jim.server.JimServerAPI;
 import org.jim.server.command.CommandManager;
 import org.jim.server.command.handler.LoginReqHandler;
+import org.jim.server.processor.handshake.WsHandshakeProcessor;
 
 /**
  * @author xiaokang
  */
-public class XimWsHandshakeProcessor extends org.jim.server.processor.handshake.WsHandshakeProcessor {
+public class XimWsHandshakeProcessor extends WsHandshakeProcessor {
 
     @Override
     public void onAfterHandshake(ImPacket packet, ImChannelContext imChannelContext) throws ImException
