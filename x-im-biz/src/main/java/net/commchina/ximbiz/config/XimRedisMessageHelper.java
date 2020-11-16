@@ -108,9 +108,9 @@ public class XimRedisMessageHelper extends AbstractMessageHelper {
                 Iterator<String> userKeyIterator = userKeys.iterator();
                 while (userKeyIterator.hasNext()) {
                     String userKey = userKeyIterator.next();
-                    userKey = userKey.substring(userKey.indexOf(USER + SUFFIX));
-                    List<String> messages = XimRedisCacheManager.getCache(GROUP).sortSetGetAll(userKey);
-                    XimRedisCacheManager.getCache(GROUP).remove(userKey);
+                    userKey = userKey.substring(userKey.indexOf(PUSH + SUFFIX));
+                    List<String> messages = XimRedisCacheManager.getCache(PUSH).sortSetGetAll(userKey);
+                    XimRedisCacheManager.getCache(PUSH).remove(userKey);
                     messageList.addAll(BeanUtils.toArray(messages, ChatBody.class));
                 }
                 putFriendsMessage(messageData, messageList, null);
