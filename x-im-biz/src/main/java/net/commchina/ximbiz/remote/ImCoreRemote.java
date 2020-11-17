@@ -2,6 +2,8 @@ package net.commchina.ximbiz.remote;
 
 import net.commchina.framework.common.response.APIResponse;
 import org.jim.core.packets.ChatBody;
+import org.jim.core.packets.Group;
+import org.jim.core.packets.User;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,7 +25,7 @@ public interface ImCoreRemote {
      * @param key 持久化ID
      * @return
      */
-    @GetMapping("/job/chat/msg/getOfflineMessage")
+    @GetMapping("/job/v1/msg/getOfflineMessage")
     APIResponse<List<ChatBody>> getOfflineMessage(@RequestParam("key") String key);
 
     /**
@@ -32,8 +34,8 @@ public interface ImCoreRemote {
      * @param key 持久化ID
      * @return
      */
-    @GetMapping("/job/chat/msg/fuzzyOfflineMessage")
-    APIResponse<List<ChatBody>> fuzzyOfflineMessage(@RequestParam("key")  String key);
+    @GetMapping("/job/v1/msg/fuzzyOfflineMessage")
+    APIResponse<List<ChatBody>> fuzzyOfflineMessage(@RequestParam("key") String key);
 
     /**
      * 获取与指定用户历史消息;
@@ -41,7 +43,7 @@ public interface ImCoreRemote {
      * @param key 持久化ID
      * @return
      */
-    @GetMapping("/job/chat/msg/getHistoryMessage")
+    @GetMapping("/job/v1/msg/getHistoryMessage")
     APIResponse<List<ChatBody>> getHistoryMessage(@RequestParam("key") String key);
 
     /**
@@ -52,8 +54,8 @@ public interface ImCoreRemote {
      * @param max 消息区间结束时间
      * @return
      */
-    @GetMapping("/job/chat/msg/getHistoryMessageByTime")
-    APIResponse<List<ChatBody>> getHistoryMessage(@RequestParam("key") String key,@RequestParam("min")  double min,@RequestParam("max")  double max);
+    @GetMapping("/job/v1/msg/getHistoryMessageByTime")
+    APIResponse<List<ChatBody>> getHistoryMessage(@RequestParam("key") String key, @RequestParam("min") double min, @RequestParam("max") double max);
 
     /**
      * 获取与指定用户历史消息;
@@ -65,6 +67,33 @@ public interface ImCoreRemote {
      * @param count  数量
      * @return
      */
-    @GetMapping("/job/chat/msg/getHistoryMessageByTimePage")
-    APIResponse<List<ChatBody>> getHistoryMessage(@RequestParam("key") String key,@RequestParam("min")  double min,@RequestParam("max")  double max,@RequestParam("offset")  int offset,@RequestParam("count")  int count);
+    @GetMapping("/job/v1/msg/getHistoryMessageByTimePage")
+    APIResponse<List<ChatBody>> getHistoryMessage(@RequestParam("key") String key, @RequestParam("min") double min, @RequestParam("max") double max, @RequestParam("offset") int offset, @RequestParam("count") int count);
+
+    /**
+     * 查询当前用户所在群组
+     *
+     * @param userId
+     * @return
+     */
+    @GetMapping("/job/v1/user/getGroups")
+    APIResponse<List<Group>> getGroups(@RequestParam("userId") String userId);
+
+    /**
+     * 查询用户详情
+     *
+     * @param userId
+     * @return
+     */
+    @GetMapping("/job/v1/user/getUserInfo")
+    APIResponse<User> getUserInfo(@RequestParam("userId") String userId);
+
+    /**
+     * 查询好友
+     *
+     * @param userId
+     * @return
+     */
+    @GetMapping("/job/v1/user/initFriends")
+    APIResponse<Group> initFriends(@RequestParam("userId") String userId);
 }

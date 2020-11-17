@@ -115,7 +115,7 @@ public abstract class LoginServiceProcessor extends AbstractProtocolCmdProcessor
         //模拟的用户好友,正式根据业务去查数据库或者缓存;
 		Group friends = initFriends(imChannelContext.getUserId());
 		User userInfo = getUserInfo(imChannelContext.getUserId());
-		builder.addFriend(friends).avatar(userInfo.getAvatar()).status(UserStatusType.ONLINE.getStatus());
+		builder.addFriend(friends).avatar(userInfo.getAvatar()).status(UserStatusType.ONLINE.getStatus()).sign(userInfo.getSign());
         return builder.build();
     }
 
