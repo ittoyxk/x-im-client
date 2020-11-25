@@ -25,7 +25,9 @@ public class XimTcpHandshakeProcessor extends TcpHandshakeProcessor {
 		LoginReqHandler loginHandler = (LoginReqHandler) CommandManager.getCommand(Command.COMMAND_LOGIN_REQ);
 		HttpRequest request = (HttpRequest)packet;
 		String token = request.getParams().get("token") == null ? null : (String)request.getParams().get("token")[0];
+		String userId = request.getParams().get("userId") == null ? null : (String)request.getParams().get("userId")[0];
 		LoginReqBody loginBody = new LoginReqBody(token);
+		loginBody.setUserId(userId);
 		byte[] loginBytes = JsonKit.toJsonBytes(loginBody);
 		request.setBody(loginBytes);
 		try{
