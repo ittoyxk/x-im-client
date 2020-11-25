@@ -13,6 +13,8 @@ import org.jim.server.command.CommandManager;
 import org.jim.server.command.handler.LoginReqHandler;
 import org.jim.server.processor.handshake.WsHandshakeProcessor;
 
+import java.util.Map;
+
 /**
  * @author xiaokang
  */
@@ -24,7 +26,8 @@ public class XimWsHandshakeProcessor extends WsHandshakeProcessor {
         LoginReqHandler loginHandler = (LoginReqHandler) CommandManager.getCommand(Command.COMMAND_LOGIN_REQ);
         HttpRequest request = (HttpRequest) packet;
         String token = request.getParams().get("token") == null ? null : (String) request.getParams().get("token")[0];
-        String ip = request.getRemote().getIp();
+        String ip = request.getHeader("x-forwarded-for");
+
         LoginReqBody loginBody = new LoginReqBody(token);
         loginBody.setUserId(ip);
         byte[] loginBytes = JsonKit.toJsonBytes(loginBody);
