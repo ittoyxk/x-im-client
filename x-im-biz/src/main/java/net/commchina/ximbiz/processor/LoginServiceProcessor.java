@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONObject;
 import feign.Response;
 import lombok.extern.slf4j.Slf4j;
 import net.commchina.framework.common.bean.userinfo.UserInfo;
+import net.commchina.framework.common.bean.userinfo.UserInfoContext;
 import net.commchina.framework.common.remote.OauthClient;
 import net.commchina.framework.common.response.APIResponse;
 import net.commchina.framework.common.util.SpringContextUtil;
@@ -38,8 +39,7 @@ public abstract class LoginServiceProcessor extends AbstractProtocolCmdProcessor
     @Override
     public User getUser(LoginReqBody loginReqBody, ImChannelContext imChannelContext)
     {
-        String token = loginReqBody.getToken();
-        User user = getUser(token, imChannelContext);
+        User user = getUser(imChannelContext);
         return user;
     }
 
@@ -53,7 +53,7 @@ public abstract class LoginServiceProcessor extends AbstractProtocolCmdProcessor
     public LoginRespBody doLogin(LoginReqBody loginReqBody, ImChannelContext imChannelContext)
     {
         if (Objects.nonNull(loginReqBody.getToken())) {
-            UserInfo user = authUser(loginReqBody.getToken());
+            UserInfo user = authUser(loginReqBody.getToken(),loginReqBody.getUserId());
             if (user != null) {
                 imChannelContext.setUserId(user.getUserId().toString());
                 imChannelContext.setAttribute("userId", user.getUserId().toString());
@@ -104,7 +104,7 @@ public abstract class LoginServiceProcessor extends AbstractProtocolCmdProcessor
      * @return
      * @author: xiaokang
      */
-    public User getUser(String token, ImChannelContext imChannelContext)
+    public User getUser(ImChannelContext imChannelContext)
     {
         User.Builder builder = User.newBuilder()
                 .userId(imChannelContext.getUserId())
@@ -119,10 +119,13 @@ public abstract class LoginServiceProcessor extends AbstractProtocolCmdProcessor
         return builder.build();
     }
 
-    protected UserInfo authUser(String token)
+    protected UserInfo authUser(String token,String userId)
     {
         UserInfo data = null;
         OauthClient oauthClient = SpringContextUtil.getBean(OauthClient.class);
+        UserInfo userInfo=new UserInfo();
+        userInfo.setRequestId(userId);
+        UserInfoContext.setUserInfo(userInfo);
         Response authResp = oauthClient.userAuth(token);
         if (authResp.status() == HttpStatus.OK.value()) {
             try {

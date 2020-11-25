@@ -24,7 +24,9 @@ public class XimWsHandshakeProcessor extends WsHandshakeProcessor {
         LoginReqHandler loginHandler = (LoginReqHandler) CommandManager.getCommand(Command.COMMAND_LOGIN_REQ);
         HttpRequest request = (HttpRequest) packet;
         String token = request.getParams().get("token") == null ? null : (String) request.getParams().get("token")[0];
+        String ip = request.getRemote().getIp();
         LoginReqBody loginBody = new LoginReqBody(token);
+        loginBody.setUserId(ip);
         byte[] loginBytes = JsonKit.toJsonBytes(loginBody);
         request.setBody(loginBytes);
         try {
