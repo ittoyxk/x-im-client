@@ -1,6 +1,5 @@
 package net.commchina.ximbiz.config;
 
-import cn.hutool.core.convert.Convert;
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import net.commchina.framework.boot.redis.EnhancedRedisService;
@@ -8,10 +7,13 @@ import net.commchina.framework.common.util.SpringContextUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.jim.core.cache.ICache;
 import org.jim.core.utils.JsonKit;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.core.script.RedisScript;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -27,7 +29,10 @@ public class XimRedisCache implements ICache {
 
     private EnhancedRedisService enhancedRedisService;
 
-    private RedisTemplate redisTemplate;
+    private StringRedisTemplate stringRedisTemplate;
+
+    private RedisScript<List> zRangeRemByScore = new DefaultRedisScript("local zset = redis.call(\"zrangebyscore\", KEYS[1], ARGV[1], ARGV[2]);\nreturn zset;", List.class);
+    private RedisScript<List<String>> zRangeRemByScoreAndLimit = new DefaultRedisScript("local zset = redis.call(\"zrangebyscore\", KEYS[1], ARGV[1], ARGV[2], \"limit\", ARGV[3], ARGV[4]);\nreturn zset;", List.class);
 
     public static String cacheKey(String cacheName, String key)
     {
@@ -54,7 +59,7 @@ public class XimRedisCache implements ICache {
         this.timeToIdleSeconds = timeToIdleSeconds;
         this.timeout = this.timeToLiveSeconds == null ? this.timeToIdleSeconds : this.timeToLiveSeconds;
         this.enhancedRedisService = SpringContextUtil.getBean(EnhancedRedisService.class);
-        this.redisTemplate=SpringContextUtil.getBean("redis");
+        this.stringRedisTemplate = SpringContextUtil.getBean(StringRedisTemplate.class);
     }
 
     @Override
@@ -76,10 +81,10 @@ public class XimRedisCache implements ICache {
         }
         Serializable value = null;
         try {
-            value =enhancedRedisService.get(cacheKey(cacheName, key), Serializable.class);
+            value = enhancedRedisService.get(cacheKey(cacheName, key), Serializable.class);
             if (timeToIdleSeconds != null) {
                 if (value != null) {
-                    enhancedRedisService.expire(key,timeout, TimeUnit.SECONDS);
+                    enhancedRedisService.expire(key, timeout, TimeUnit.SECONDS);
                 }
             }
         } catch (Exception e) {
@@ -99,7 +104,7 @@ public class XimRedisCache implements ICache {
             value = enhancedRedisService.get(cacheKey(cacheName, key), clazz);
             if (timeToIdleSeconds != null) {
                 if (value != null) {
-                    enhancedRedisService.expire(key,timeout, TimeUnit.SECONDS);
+                    enhancedRedisService.expire(key, timeout, TimeUnit.SECONDS);
                 }
             }
         } catch (Exception e) {
@@ -126,7 +131,7 @@ public class XimRedisCache implements ICache {
             return;
         }
         try {
-            enhancedRedisService.set(cacheKey(cacheName, key), value instanceof String ? value.toString(): JSON.toJSONString(value), Integer.parseInt(timeout + ""),TimeUnit.SECONDS);
+            enhancedRedisService.set(cacheKey(cacheName, key), value instanceof String ? value.toString() : JSON.toJSONString(value), Integer.parseInt(timeout + ""), TimeUnit.SECONDS);
         } catch (Exception e) {
             log.error(e.toString(), e);
         }
@@ -151,7 +156,7 @@ public class XimRedisCache implements ICache {
             return null;
         }
         try {
-            return enhancedRedisService.lRange(cacheKey(cacheName, key),0,-1);
+            return enhancedRedisService.lRange(cacheKey(cacheName, key), 0, -1);
         } catch (Exception e) {
             log.error(e.toString(), e);
         }
@@ -164,7 +169,7 @@ public class XimRedisCache implements ICache {
             return 0L;
         }
         try {
-            return enhancedRedisService.lRem(cacheKey(cacheName, key),  value);
+            return enhancedRedisService.lRem(cacheKey(cacheName, key), value);
         } catch (Exception e) {
             log.error(e.toString(), e);
         }
@@ -179,8 +184,8 @@ public class XimRedisCache implements ICache {
         }
         try {
             String jsonValue = value instanceof String ? (String) value : JsonKit.toJSONString(value);
-            String k=cacheKey(cacheName, key);
-           enhancedRedisService.zAdd(k,  jsonValue,score);
+            String k = cacheKey(cacheName, key);
+            enhancedRedisService.zAdd(k, jsonValue, score);
         } catch (Exception e) {
             log.error(e.toString(), e);
         }
@@ -192,7 +197,8 @@ public class XimRedisCache implements ICache {
             return null;
         }
         try {
-            List<String> dataSet = enhancedRedisService.zRangeRemByScore(cacheKey(cacheName, key), Long.MIN_VALUE, Long.MAX_VALUE);
+            List<String> dataSet = (List) this.stringRedisTemplate.execute(this.zRangeRemByScore, Collections.singletonList(cacheKey(cacheName, key)), new Object[]{String.valueOf(Long.MIN_VALUE), String.valueOf(Long.MAX_VALUE)});
+//            List<String> dataSet = enhancedRedisService.zRangeRemByScore(cacheKey(cacheName, key), Long.MIN_VALUE, Long.MAX_VALUE);
             if (dataSet == null) {
                 return null;
             }
@@ -209,7 +215,8 @@ public class XimRedisCache implements ICache {
             return null;
         }
         try {
-            List<String> dataSet = enhancedRedisService.zRangeRemByScore(cacheKey(cacheName, key), Convert.toLong(min), Convert.toLong(max));
+//            List<String> dataSet = enhancedRedisService.zRangeRemByScore(cacheKey(cacheName, key), Convert.toLong(min), Convert.toLong(max));
+            List<String> dataSet = (List) this.stringRedisTemplate.execute(this.zRangeRemByScore, Collections.singletonList(cacheKey(cacheName, key)), new Object[]{String.valueOf(min), String.valueOf(max)});
             if (dataSet == null) {
                 return null;
             }
@@ -226,8 +233,9 @@ public class XimRedisCache implements ICache {
             return null;
         }
         try {
-            List<String> dataSet = enhancedRedisService
-                    .zRangeRemByScoreAndLimit(cacheKey(cacheName, key), Convert.toLong(min), Convert.toLong(max), offset, count);
+//            List<String> dataSet = enhancedRedisService.zRangeRemByScoreAndLimit(cacheKey(cacheName, key), Convert.toLong(min), Convert.toLong(max), offset, count);
+
+            List<String> dataSet = (List) this.stringRedisTemplate.execute(this.zRangeRemByScoreAndLimit, Collections.singletonList(cacheKey(cacheName, key)), new Object[]{String.valueOf(min), String.valueOf(max), String.valueOf(offset), String.valueOf(count)});
             if (dataSet == null) {
                 return null;
             }
@@ -245,7 +253,7 @@ public class XimRedisCache implements ICache {
             return;
         }
         try {
-            enhancedRedisService.set(cacheKey(cacheName, key), value.toString(), 10,TimeUnit.SECONDS);
+            enhancedRedisService.set(cacheKey(cacheName, key), value.toString(), 10, TimeUnit.SECONDS);
         } catch (Exception e) {
             log.error(e.toString(), e);
         }
