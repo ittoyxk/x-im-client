@@ -1,5 +1,6 @@
 package net.commchina.ximbiz.service;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import net.commchina.framework.common.util.SpringContextUtil;
 import net.commchina.xim.common.bean.ChatMessageReq;
@@ -52,7 +53,7 @@ public class XimAsyncChatMessageProcessor extends AsyncChatMessageProcessor {
     public void writeMessage(String key, double score, ChatBody chatBody)
     {
         ChatMessageReq build = ChatMessageReq.builder().msgType(1).key(key).score(score).chatBody(chatBody).build();
-        rabbitTemplate.convertAndSend(AppConstant.IM_CHAT_MESSAGE_EXCHANGE, AppConstant.IM_CHAT_MESSAGE_ROUTING_KEY, build);
+        rabbitTemplate.convertAndSend(AppConstant.IM_CHAT_MESSAGE_EXCHANGE, AppConstant.IM_CHAT_MESSAGE_ROUTING_KEY, JSONObject.toJSONString(build));
     }
 
     /**
@@ -64,7 +65,7 @@ public class XimAsyncChatMessageProcessor extends AsyncChatMessageProcessor {
     public void remove(String key)
     {
         ChatMessageReq build = ChatMessageReq.builder().msgType(2).key(key).build();
-        rabbitTemplate.convertAndSend(AppConstant.IM_CHAT_MESSAGE_EXCHANGE, AppConstant.IM_CHAT_MESSAGE_ROUTING_KEY, build);
+        rabbitTemplate.convertAndSend(AppConstant.IM_CHAT_MESSAGE_EXCHANGE, AppConstant.IM_CHAT_MESSAGE_ROUTING_KEY, JSONObject.toJSONString(build));
     }
 
     /**
@@ -76,7 +77,7 @@ public class XimAsyncChatMessageProcessor extends AsyncChatMessageProcessor {
     public void fuzzyRemove(String key)
     {
         ChatMessageReq build = ChatMessageReq.builder().msgType(3).key(key).build();
-        rabbitTemplate.convertAndSend(AppConstant.IM_CHAT_MESSAGE_EXCHANGE, AppConstant.IM_CHAT_MESSAGE_ROUTING_KEY, build);
+        rabbitTemplate.convertAndSend(AppConstant.IM_CHAT_MESSAGE_EXCHANGE, AppConstant.IM_CHAT_MESSAGE_ROUTING_KEY, JSONObject.toJSONString(build));
     }
 
     /**
