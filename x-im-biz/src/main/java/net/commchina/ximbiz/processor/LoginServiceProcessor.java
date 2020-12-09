@@ -3,6 +3,7 @@
  */
 package net.commchina.ximbiz.processor;
 
+import cn.hutool.core.convert.Convert;
 import com.alibaba.fastjson.JSONObject;
 import feign.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -116,6 +117,9 @@ public abstract class LoginServiceProcessor extends AbstractProtocolCmdProcessor
 		Group friends = initFriends(imChannelContext.getUserId());
 		User userInfo = getUserInfo(imChannelContext.getUserId());
 		builder.addFriend(friends).avatar(userInfo.getAvatar()).status(UserStatusType.ONLINE.getStatus()).sign(userInfo.getSign());
+		if (Convert.toLong(imChannelContext.getUserId()) <0){
+            builder.nick(userInfo.getNick());
+        }
         return builder.build();
     }
 
