@@ -3,9 +3,10 @@ package net.commchina.im;
 import lombok.extern.slf4j.Slf4j;
 import net.commchina.ximbiz.command.XimTcpHandshakeProcessor;
 import net.commchina.ximbiz.command.XimWsHandshakeProcessor;
+import net.commchina.ximbiz.command.handler.ReadStatusReqHandler;
+import net.commchina.ximbiz.command.handler.RecallReqHandler;
 import net.commchina.ximbiz.config.NacosImServerConfigBuilder;
 import net.commchina.ximbiz.config.XimRedisMessageHelper;
-import net.commchina.ximbiz.config.XimRedisMysqlMessageHelper;
 import net.commchina.ximbiz.listener.XimGroupListener;
 import net.commchina.ximbiz.listener.XimUserListener;
 import net.commchina.ximbiz.service.XimAsyncChatMessageProcessor;
@@ -94,6 +95,12 @@ public class XimServerStart implements ApplicationRunner {
         imServerConfig.setIsStore(store ? "on" : "off");
         imServerConfig.setMessageHelper(new XimRedisMessageHelper());
         JimServer jimServer = new JimServer(imServerConfig);
+
+
+        //注册消息撤销Handler
+        CommandManager.registerCommand(new RecallReqHandler());
+        //注册消息状态Handler
+        CommandManager.registerCommand(new ReadStatusReqHandler());
 
         jimServer.start();
         log.info("jim server start");
