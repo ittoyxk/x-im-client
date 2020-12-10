@@ -6,7 +6,7 @@ import net.commchina.ximbiz.command.XimWsHandshakeProcessor;
 import net.commchina.ximbiz.command.handler.ReadStatusReqHandler;
 import net.commchina.ximbiz.command.handler.RecallReqHandler;
 import net.commchina.ximbiz.config.NacosImServerConfigBuilder;
-import net.commchina.ximbiz.config.XimRedisMessageHelper;
+import net.commchina.ximbiz.config.XimRedisMysqlMessageHelper;
 import net.commchina.ximbiz.listener.XimGroupListener;
 import net.commchina.ximbiz.listener.XimUserListener;
 import net.commchina.ximbiz.service.XimAsyncChatMessageProcessor;
@@ -94,7 +94,7 @@ public class XimServerStart implements ApplicationRunner {
         //TODO 生产环境移除http协议 ProtocolManager.removeServerHandler("http");
 
         imServerConfig.setIsStore(store ? "on" : "off");
-        imServerConfig.setMessageHelper(new XimRedisMessageHelper());
+        imServerConfig.setMessageHelper(new XimRedisMysqlMessageHelper());
         JimServer jimServer = new JimServer(imServerConfig);
 
 
