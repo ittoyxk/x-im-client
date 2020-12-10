@@ -36,7 +36,7 @@ public class XimRecallCmdProcessor extends RecallCmdProcessor {
             ChatBody data = imCoreRemote.isRecall(msgId).getData();
             Long createTime = data.getCreateTime();
             long now = Instant.now().toEpochMilli();
-            return now-createTime>120;
+            return now-createTime<=120000;
         } catch (Exception e) {
             log.info("消息撤回校验失败:{}",e);
             return false;
