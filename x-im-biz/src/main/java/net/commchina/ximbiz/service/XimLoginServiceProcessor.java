@@ -2,7 +2,9 @@ package net.commchina.ximbiz.service;
 
 import cn.hutool.core.util.RandomUtil;
 import lombok.extern.slf4j.Slf4j;
+import net.commchina.framework.common.util.SpringContextUtil;
 import net.commchina.ximbiz.processor.LoginServiceProcessor;
+import net.commchina.ximbiz.remote.ImCoreRemote;
 import org.jim.core.packets.Group;
 import org.jim.core.packets.User;
 import org.jim.core.session.id.impl.UUIDSessionIdGenerator;
@@ -27,6 +29,12 @@ public class XimLoginServiceProcessor extends LoginServiceProcessor {
             "大为", "如来", "佛祖", "科比", "罗斯", "詹姆屎", "科神", "科蜜", "库里", "卡特", "麦迪", "乔丹", "魔术师", "加索尔", "法码尔", "南斯", "伊哥", "杜兰特", "保罗", "杭州", "爱湘", "湘湘", "昕", "函", "鬼谷子", "膑", "荡",
             "子家", "德利优视", "五方会谈", "来电话了", "轨迹", "超"};
 
+    private ImCoreRemote imCoreRemote;
+
+    public XimLoginServiceProcessor()
+    {
+        this.imCoreRemote = SpringContextUtil.getBean(ImCoreRemote.class);
+    }
 
     /**
      * 查询当前用户所在群组
@@ -37,7 +45,8 @@ public class XimLoginServiceProcessor extends LoginServiceProcessor {
     @Override
     public List<Group> getGroups(String userId)
     {
-        return Arrays.asList(Group.newBuilder().groupId("100").name("X-IM朋友圈").build());
+        return imCoreRemote.getGroups(userId).getData();
+//        return Arrays.asList(Group.newBuilder().groupId("100").name("X-IM朋友圈").build());
     }
 
     /**
@@ -49,7 +58,8 @@ public class XimLoginServiceProcessor extends LoginServiceProcessor {
     @Override
     public User getUserInfo(String userId)
     {
-        return User.newBuilder().avatar(nextImg()).build();
+        return imCoreRemote.getUserInfo(userId).getData();
+//        return User.newBuilder().avatar(nextImg()).build();
     }
 
     /**
@@ -60,16 +70,17 @@ public class XimLoginServiceProcessor extends LoginServiceProcessor {
     @Override
     public Group initFriends(String userId)
     {
-        Group myFriend = Group.newBuilder().groupId("1").name("我的好友").build();
-        List<User> myFriendGroupUsers = new ArrayList();
-        User user1 = User.newBuilder()
-                .userId(UUIDSessionIdGenerator.instance.sessionId(null))
-                .nick(familyName[RandomUtil.randomInt(0, familyName.length - 1)] + secondName[RandomUtil.randomInt(0, secondName.length - 1)])
-                .avatar(nextImg())
-                .build();
-        myFriendGroupUsers.add(user1);
-        myFriend.setUsers(myFriendGroupUsers);
-        return myFriend;
+//        Group myFriend = Group.newBuilder().groupId("1").name("我的好友").build();
+//        List<User> myFriendGroupUsers = new ArrayList();
+//        User user1 = User.newBuilder()
+//                .userId(UUIDSessionIdGenerator.instance.sessionId(null))
+//                .nick(familyName[RandomUtil.randomInt(0, familyName.length - 1)] + secondName[RandomUtil.randomInt(0, secondName.length - 1)])
+//                .avatar(nextImg())
+//                .build();
+//        myFriendGroupUsers.add(user1);
+//        myFriend.setUsers(myFriendGroupUsers);
+//        return myFriend;
+        return imCoreRemote.initFriends(userId).getData();
     }
 
     public String nextImg()
