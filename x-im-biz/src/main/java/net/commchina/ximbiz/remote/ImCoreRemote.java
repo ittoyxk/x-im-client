@@ -99,5 +99,5 @@ public interface ImCoreRemote {
     APIResponse<Group> initFriends(@RequestParam("userId") String userId);
 
     @GetMapping("/job/v1/msg/find/{msgId}")
-    APIResponse<Boolean> isRecall(@PathVariable("msgId")  String msgId);
+    APIResponse<ChatBody> isRecall(@PathVariable("msgId")  String msgId);
 }

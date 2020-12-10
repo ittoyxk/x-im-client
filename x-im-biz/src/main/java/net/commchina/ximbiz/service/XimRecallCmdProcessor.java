@@ -4,6 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import net.commchina.framework.common.util.SpringContextUtil;
 import net.commchina.ximbiz.processor.RecallCmdProcessor;
 import net.commchina.ximbiz.remote.ImCoreRemote;
+import org.jim.core.packets.ChatBody;
+
+import java.time.Instant;
 
 /**
  * @description: x-im
@@ -29,6 +32,14 @@ public class XimRecallCmdProcessor extends RecallCmdProcessor {
     @Override
     public boolean isRecall(String msgId)
     {
-        return imCoreRemote.isRecall(msgId).getData();
+        try {
+            ChatBody data = imCoreRemote.isRecall(msgId).getData();
+            Long createTime = data.getCreateTime();
+            long now = Instant.now().toEpochMilli();
+            return now-createTime>120;
+        } catch (Exception e) {
+            log.info("消息撤回校验失败:{}",e);
+            return false;
+        }
     }
 }
