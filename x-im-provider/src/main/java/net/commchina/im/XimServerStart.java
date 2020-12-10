@@ -11,6 +11,7 @@ import net.commchina.ximbiz.listener.XimGroupListener;
 import net.commchina.ximbiz.listener.XimUserListener;
 import net.commchina.ximbiz.service.XimAsyncChatMessageProcessor;
 import net.commchina.ximbiz.service.XimLoginServiceProcessor;
+import net.commchina.ximbiz.service.XimRecallCmdProcessor;
 import org.apache.commons.lang3.StringUtils;
 import org.jim.core.packets.Command;
 import org.jim.core.utils.PropUtil;
@@ -99,6 +100,8 @@ public class XimServerStart implements ApplicationRunner {
 
         //注册消息撤销Handler
         CommandManager.registerCommand(new RecallReqHandler());
+        RecallReqHandler recallReqHandler = CommandManager.getCommand(Command.COMMAND_CANCEL_MSG_REQ, RecallReqHandler.class);
+        recallReqHandler.setSingleProcessor(new XimRecallCmdProcessor());
         //注册消息状态Handler
         CommandManager.registerCommand(new ReadStatusReqHandler());
 

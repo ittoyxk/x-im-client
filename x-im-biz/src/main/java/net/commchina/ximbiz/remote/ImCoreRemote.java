@@ -6,6 +6,7 @@ import org.jim.core.packets.Group;
 import org.jim.core.packets.User;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -96,4 +97,7 @@ public interface ImCoreRemote {
      */
     @GetMapping("/job/v1/user/initFriends")
     APIResponse<Group> initFriends(@RequestParam("userId") String userId);
+
+    @GetMapping("/job/v1/msg/find/{msgId}")
+    APIResponse<Boolean> isRecall(@PathVariable("msgId")  String msgId);
 }

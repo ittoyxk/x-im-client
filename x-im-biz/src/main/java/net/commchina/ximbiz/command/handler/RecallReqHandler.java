@@ -1,5 +1,6 @@
 package net.commchina.ximbiz.command.handler;
 
+import net.commchina.ximbiz.processor.RecallCmdProcessor;
 import net.commchina.ximbiz.command.packets.RecallBody;
 import org.jim.core.ImChannelContext;
 import org.jim.core.ImPacket;
@@ -47,6 +48,16 @@ public class RecallReqHandler extends AbstractCmdHandler {
             RecallBody chatBody = JsonKit.toBean(packet.getBody(), RecallBody.class);
             packet.setBody(chatBody.toByte());
             if (chatBody != null && ChatType.forNumber(chatBody.getChatType()) != null) {
+                //校验消息是否可撤回
+                RecallCmdProcessor recallCmdProcessor = this.getSingleProcessor(RecallCmdProcessor.class);
+                boolean recall = recallCmdProcessor.isRecall(chatBody.getId());
+                if(!recall){
+                    RespBody chatDataInCorrectRespPacket = new RespBody(Command.COMMAND_CANCEL_MSG_RESP);
+                    chatDataInCorrectRespPacket.setCode(10022).setMsg("消息撤回失败");
+                    ImPacket respPacket = ProtocolManager.Converter.respPacket(chatDataInCorrectRespPacket, channelContext);
+                    respPacket.setStatus(ImStatus.C10001);
+                    return respPacket;
+                }
                 MsgQueueRunnable msgQueueRunnable = this.getMsgQueueRunnable(imServerChannelContext);
                 msgQueueRunnable.addMsg(chatBody);
                 msgQueueRunnable.executor.execute(msgQueueRunnable);
