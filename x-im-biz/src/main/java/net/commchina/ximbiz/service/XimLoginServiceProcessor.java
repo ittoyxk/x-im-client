@@ -1,15 +1,17 @@
 package net.commchina.ximbiz.service;
 
-import cn.hutool.core.util.RandomUtil;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import net.commchina.framework.common.util.SpringContextUtil;
 import net.commchina.ximbiz.processor.LoginServiceProcessor;
 import net.commchina.ximbiz.remote.ImCoreRemote;
 import org.jim.core.packets.Group;
 import org.jim.core.packets.User;
-import org.jim.core.session.id.impl.UUIDSessionIdGenerator;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author xiaokang
@@ -45,7 +47,7 @@ public class XimLoginServiceProcessor extends LoginServiceProcessor {
     @Override
     public List<Group> getGroups(String userId)
     {
-        return imCoreRemote.getGroups(userId).getData();
+        return Optional.ofNullable(imCoreRemote.getGroups(userId).getData()).orElse(Lists.newArrayList());
 //        return Arrays.asList(Group.newBuilder().groupId("100").name("X-IM朋友圈").build());
     }
 
@@ -58,7 +60,7 @@ public class XimLoginServiceProcessor extends LoginServiceProcessor {
     @Override
     public User getUserInfo(String userId)
     {
-        return imCoreRemote.getUserInfo(userId).getData();
+        return Optional.ofNullable(imCoreRemote.getUserInfo(userId).getData()).orElse(User.newBuilder().build());
 //        return User.newBuilder().avatar(nextImg()).build();
     }
 
@@ -80,7 +82,7 @@ public class XimLoginServiceProcessor extends LoginServiceProcessor {
 //        myFriendGroupUsers.add(user1);
 //        myFriend.setUsers(myFriendGroupUsers);
 //        return myFriend;
-        return imCoreRemote.initFriends(userId).getData();
+        return Optional.ofNullable(imCoreRemote.initFriends(userId).getData()).orElse(Group.newBuilder().build());
     }
 
     public String nextImg()
