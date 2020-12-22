@@ -36,7 +36,7 @@
         <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
         <tio-core.version>3.6.2.v20200808-RELEASE</tio-core.version>
         <tio-utils.version>3.6.2.v20200808-RELEASE</tio-utils.version>
-        <x-im.version>1.0.0.0</x-im.version>
+        <x-im.version>1.0.0.1</x-im.version>
     </properties>
     <dependencyManagement>
         <dependencies>
