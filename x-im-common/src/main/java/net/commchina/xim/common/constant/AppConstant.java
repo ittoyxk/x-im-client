@@ -10,4 +10,7 @@ public interface AppConstant {
     String IM_CHAT_MESSAGE_EXCHANGE = "im.chat.message.exchange";
     String IM_CHAT_MESSAGE_ROUTING_KEY = "im.chat.message.#";
     String IM_CHAT_MESSAGE_QUEUE = "im.chat.message.queue";
+
+    String IM_CHAT_USER_KEY = "im.chat.user.#";
+    String IM_CHAT_USER_QUEUE = "im.chat.user.queue";
 }
