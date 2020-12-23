@@ -29,7 +29,10 @@ public class XimUserListener extends AbstractImUserListener {
     @Override
     public void doAfterBind(ImChannelContext imChannelContext, User user) throws ImException
     {
-        String stats = JSONObject.toJSONString(user);
+        JSONObject  push=new JSONObject();
+        push.put("user",user);
+        push.put("sessionId",imChannelContext.getSessionContext().getId());
+        String stats =push.toJSONString();
         log.info("绑定用户:{}", stats);
         rabbitTemplate.convertAndSend(AppConstant.IM_CHAT_MESSAGE_EXCHANGE, AppConstant.IM_CHAT_USER_KEY,stats);
     }
@@ -37,7 +40,10 @@ public class XimUserListener extends AbstractImUserListener {
     @Override
     public void doAfterUnbind(ImChannelContext imChannelContext, User user) throws ImException
     {
-        String stats = JSONObject.toJSONString(user);
+        JSONObject  push=new JSONObject();
+        push.put("user",user);
+        push.put("sessionId",imChannelContext.getSessionContext().getId());
+        String stats =push.toJSONString();
         log.info("解绑用户:{}", stats);
         rabbitTemplate.convertAndSend(AppConstant.IM_CHAT_MESSAGE_EXCHANGE, AppConstant.IM_CHAT_USER_KEY,stats);
     }
