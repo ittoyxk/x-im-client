@@ -31,7 +31,7 @@ public class XimUserListener extends AbstractImUserListener {
     {
         JSONObject  push=new JSONObject();
         push.put("user",user);
-        push.put("sessionId",imChannelContext.getSessionContext().getId());
+        push.put("sessionId",imChannelContext.getId());
         String stats =push.toJSONString();
         log.info("绑定用户:{}", stats);
         rabbitTemplate.convertAndSend(AppConstant.IM_CHAT_MESSAGE_EXCHANGE, AppConstant.IM_CHAT_USER_KEY,stats);
@@ -42,7 +42,7 @@ public class XimUserListener extends AbstractImUserListener {
     {
         JSONObject  push=new JSONObject();
         push.put("user",user);
-        push.put("sessionId",imChannelContext.getSessionContext().getId());
+        push.put("sessionId",imChannelContext.getId());
         String stats =push.toJSONString();
         log.info("解绑用户:{}", stats);
         rabbitTemplate.convertAndSend(AppConstant.IM_CHAT_MESSAGE_EXCHANGE, AppConstant.IM_CHAT_USER_KEY,stats);
