@@ -72,7 +72,7 @@ public class XimRedisMysqlMessageHelper extends AbstractMessageHelper {
     public void writeMessage(String timelineTable, String timelineId, ChatBody chatBody)
     {
         double score = chatBody.getCreateTime();
-        messageProcessor.writeMessage(XimRedisCacheManager.getCache(timelineTable).getCacheName() + timelineId, score, chatBody);
+        messageProcessor.writeMessage(XimRedisCacheManager.getCache(timelineTable).getCacheName() +":"+ timelineId, score, chatBody);
     }
 
 
