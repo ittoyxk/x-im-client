@@ -142,7 +142,7 @@ public class XimRedisMysqlMessageHelper extends AbstractMessageHelper {
     public UserMessageData getFriendHistoryMessage(String userId, String fromUserId, Double beginTime, Double endTime, Integer offset, Integer count)
     {
         String sessionId = ChatKit.sessionId(userId, fromUserId);
-        String userSessionKey = USER + SUFFIX + sessionId;
+        String userSessionKey =STORE + SUFFIX +  USER + SUFFIX + sessionId;
         List<ChatBody> messages = getHistoryMessage(userSessionKey, beginTime, endTime, offset, count);
         UserMessageData messageData = new UserMessageData(userId);
         putFriendsMessage(messageData, messages, fromUserId);
@@ -152,7 +152,7 @@ public class XimRedisMysqlMessageHelper extends AbstractMessageHelper {
     @Override
     public UserMessageData getGroupHistoryMessage(String userId, String groupId, Double beginTime, Double endTime, Integer offset, Integer count)
     {
-        String groupKey = GROUP + SUFFIX + groupId;
+        String groupKey =STORE + SUFFIX +  GROUP + SUFFIX + groupId;
         List<ChatBody> messages = getHistoryMessage(groupKey, beginTime, endTime, offset, count);
         UserMessageData messageData = new UserMessageData(userId);
         putGroupMessage(messageData, messages);
