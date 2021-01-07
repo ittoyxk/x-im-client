@@ -21,6 +21,7 @@ import org.jim.server.command.handler.ChatReqHandler;
 import org.jim.server.command.handler.HandshakeReqHandler;
 import org.jim.server.command.handler.LoginReqHandler;
 import org.jim.server.config.ImServerConfig;
+import org.jim.server.protocol.ProtocolManager;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -91,7 +92,7 @@ public class XimServerStart implements ApplicationRunner {
         ChatReqHandler chatReqHandler = CommandManager.getCommand(Command.COMMAND_CHAT_REQ, ChatReqHandler.class);
         chatReqHandler.setSingleProcessor(new XimAsyncChatMessageProcessor());
         /*****************end *******************************************************************************************/
-        //TODO 生产环境移除http协议 ProtocolManager.removeServerHandler("http");
+         ProtocolManager.removeServerHandler("http");
 
         imServerConfig.setIsStore(store ? "on" : "off");
         imServerConfig.setMessageHelper(new XimRedisMysqlMessageHelper());
