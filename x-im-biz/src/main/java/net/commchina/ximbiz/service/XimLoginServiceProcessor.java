@@ -47,7 +47,9 @@ public class XimLoginServiceProcessor extends LoginServiceProcessor {
     @Override
     public List<Group> getGroups(String userId)
     {
-        return Optional.ofNullable(imCoreRemote.getGroups(userId).getData()).orElse(Lists.newArrayList());
+        List<Group> data = imCoreRemote.getGroups(userId).getData();
+        log.info("getGroups:{}",data);
+        return Optional.ofNullable(data).orElse(Lists.newArrayList());
 //        return Arrays.asList(Group.newBuilder().groupId("100").name("X-IM朋友圈").build());
     }
 
@@ -60,7 +62,9 @@ public class XimLoginServiceProcessor extends LoginServiceProcessor {
     @Override
     public User getUserInfo(String userId)
     {
-        return Optional.ofNullable(imCoreRemote.getUserInfo(userId).getData()).orElse(User.newBuilder().build());
+        User data = imCoreRemote.getUserInfo(userId).getData();
+        log.info("getUserInfo:{}",data);
+        return Optional.ofNullable(data).orElse(User.newBuilder().build());
 //        return User.newBuilder().avatar(nextImg()).build();
     }
 
@@ -82,7 +86,9 @@ public class XimLoginServiceProcessor extends LoginServiceProcessor {
 //        myFriendGroupUsers.add(user1);
 //        myFriend.setUsers(myFriendGroupUsers);
 //        return myFriend;
-        return Optional.ofNullable(imCoreRemote.initFriends(userId).getData()).orElse(Group.newBuilder().build());
+        Group data = imCoreRemote.initFriends(userId).getData();
+        log.info("initFriends:{}",data);
+        return Optional.ofNullable(data).orElse(Group.newBuilder().build());
     }
 
     public String nextImg()
