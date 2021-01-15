@@ -1,5 +1,6 @@
 package net.commchina.ximbiz.service;
 
+import cn.hutool.core.convert.Convert;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import net.commchina.framework.common.util.SpringContextUtil;
@@ -49,7 +50,11 @@ public class XimLoginServiceProcessor extends LoginServiceProcessor {
     {
         List<Group> data = imCoreRemote.getGroups(userId).getData();
 
-        data.add(Group.newBuilder().groupId(userId).name("agent_private_group").build());
+        if(data!=null){
+            if(Convert.toLong(userId)>0){
+                data.add(Group.newBuilder().groupId(userId).name("agent_private_group").build());
+            }
+        }
         log.info("getGroups:{}",data);
         return Optional.ofNullable(data).orElse(Lists.newArrayList());
 //        return Arrays.asList(Group.newBuilder().groupId("100").name("X-IM朋友圈").build());
