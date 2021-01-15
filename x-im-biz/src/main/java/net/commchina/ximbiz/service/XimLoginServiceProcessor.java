@@ -48,6 +48,8 @@ public class XimLoginServiceProcessor extends LoginServiceProcessor {
     public List<Group> getGroups(String userId)
     {
         List<Group> data = imCoreRemote.getGroups(userId).getData();
+
+        data.add(Group.newBuilder().groupId(userId).name("agent_private_group").build());
         log.info("getGroups:{}",data);
         return Optional.ofNullable(data).orElse(Lists.newArrayList());
 //        return Arrays.asList(Group.newBuilder().groupId("100").name("X-IM朋友圈").build());
