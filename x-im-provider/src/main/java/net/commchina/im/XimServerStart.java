@@ -5,6 +5,7 @@ import net.commchina.ximbiz.command.XimTcpHandshakeProcessor;
 import net.commchina.ximbiz.command.XimWsHandshakeProcessor;
 import net.commchina.ximbiz.command.handler.ReadStatusReqHandler;
 import net.commchina.ximbiz.command.handler.RecallReqHandler;
+import net.commchina.ximbiz.command.handler.UnBindGroupReqHandler;
 import net.commchina.ximbiz.config.NacosImServerConfigBuilder;
 import net.commchina.ximbiz.config.XimRedisMysqlMessageHelper;
 import net.commchina.ximbiz.listener.XimGroupListener;
@@ -105,6 +106,9 @@ public class XimServerStart implements ApplicationRunner {
         recallReqHandler.setSingleProcessor(new XimRecallCmdProcessor());
         //注册消息状态Handler
         CommandManager.registerCommand(new ReadStatusReqHandler());
+
+        //注册退群请求处理器
+        CommandManager.registerCommand(new UnBindGroupReqHandler());
 
         jimServer.start();
         log.info("jim server start");
